@@ -1,0 +1,53 @@
+<section class="appointment-container">
+    <h2>Gerenciar Agendamentos</h2>
+
+    <!-- Formulário -->
+    <form [formGroup]="appointmentForm" (ngSubmit)="saveAppointment()" class="form-container">
+        <div class="form-group">
+            <label for="appointmentTypeName">Serviço</label>
+            <input type="text" id="appointmentTypeName" formControlName="appointmentTypeName" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="userEmail">Usuário</label>
+            <input type="text" id="userEmail" formControlName="userEmail" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="scheduledDateTime">Data</label>
+            <input type="datetime-local" id="scheduledDateTime" formControlName="scheduledDateTime" class="form-control" />
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+                {{ isEditing() ? 'Atualizar' : 'Adicionar' }} Agendamento
+            </button>
+            <button type="button" class="btn btn-cancel" (click)="resetForm()" *ngIf="isEditing()">Cancelar</button>
+        </div>
+    </form>
+
+    <!-- Lista de agendamentos -->
+    <table *ngIf="appointments().length > 0" class="result-table">
+        <thead>
+            <tr>
+                <th>Serviço</th>
+                <th>Usuário</th>
+                <th>Data</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let appointment of appointments()">
+                <td>{{ appointment.appointmentTypeName }}</td>
+                <td>{{ appointment.userEmail }}</td>
+                <td>{{ appointment.scheduledDateTime | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                    <button class="btn edit-button" (click)="editAppointment(appointment)">Editar</button>
+                    <button class="btn delete-button" (click)="appointment.id ? deleteAppointment(appointment.id) : null">Excluir</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p *ngIf="appointments().length === 0" class="no-data">Nenhum agendamento encontrado.</p>
+</section>
