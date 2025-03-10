@@ -1,0 +1,12 @@
+<div class="search-container">
+  <h2>Buscar</h2>
+  <input type="text" [(ngModel)]="searchQuery" placeholder="Digite sua busca..." />
+  <button (click)="search()">Buscar</button>
+
+  <div *ngIf="isLoading">🔄 Buscando...</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <ul *ngIf="results.length">
+    <li *ngFor="let result of results">{{ result }}</li>
+  </ul>
+</div>
