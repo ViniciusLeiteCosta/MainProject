@@ -37,8 +37,15 @@ public class AdressControllerTest {
 
     @Test
     public void testGetAllAdress() throws Exception {
-        // Dados simulados
-        when(adressService.getAllAdress()).thenReturn(List.of(new Adress("123", "Main St", "Springfield", "SP", "Brazil")));
+        // Criando o objeto Adress manualmente
+        Adress adress = new Adress();
+        adress.setNumber("123");
+        adress.setStreet("Main St");
+        adress.setCity("Springfield");
+        adress.setState("SP");
+        adress.setCountry("Brazil");
+
+        when(adressService.getAllAdress()).thenReturn(List.of(adress));
 
         mockMvc.perform(get("/adress/all"))
                .andExpect(status().isOk())
@@ -51,9 +58,14 @@ public class AdressControllerTest {
 
     @Test
     public void testCreateAdress() throws Exception {
-        // Dados simulados para criação
         AdressDTO adressDTO = new AdressDTO("123", "Main St", "Springfield", "SP", "Brazil");
-        Adress adress = new Adress("123", "Main St", "Springfield", "SP", "Brazil");
+        
+        Adress adress = new Adress();
+        adress.setNumber("123");
+        adress.setStreet("Main St");
+        adress.setCity("Springfield");
+        adress.setState("SP");
+        adress.setCountry("Brazil");
 
         when(adressService.saveAdress(adressDTO)).thenReturn(adress);
 
@@ -71,8 +83,13 @@ public class AdressControllerTest {
     @Test
     public void testGetAdressById_Found() throws Exception {
         Long id = 1L;
-        Adress adress = new Adress("123", "Main St", "Springfield", "SP", "Brazil");
+        Adress adress = new Adress();
         adress.setId(id);
+        adress.setNumber("123");
+        adress.setStreet("Main St");
+        adress.setCity("Springfield");
+        adress.setState("SP");
+        adress.setCountry("Brazil");
 
         when(adressService.findAdressById(id)).thenReturn(Optional.of(adress));
 
@@ -110,12 +127,9 @@ public class AdressControllerTest {
 
     @Test
     public void testDeleteAdressById_NotFound() throws Exception {
-        Long id = 1L;
-
-        doThrow(new IllegalArgumentException("Endereço não encontrado")).when(adressService).deleteAdress(id);
-
-        mockMvc.perform(delete("/adress/{id}", id))
+        mockMvc.perform(delete("/adress/{id}", 999L))
                .andExpect(status().isNotFound())
+               .andExpect(jsonPath("$.message").exists())
                .andExpect(jsonPath("$.message").value("Endereço não encontrado"));
     }
 }
