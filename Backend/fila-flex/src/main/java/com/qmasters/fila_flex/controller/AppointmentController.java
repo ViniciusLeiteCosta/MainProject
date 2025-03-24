@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.qmasters.fila_flex.dto.AppointmentDTO;
 import com.qmasters.fila_flex.model.Appointment;
 import com.qmasters.fila_flex.service.AppointmentService;
+import com.qmasters.fila_flex.util.PriorityCondition;
 
 @RestController
 @RequestMapping("/appointment")
@@ -72,18 +74,33 @@ public class AppointmentController {
         }
     }
 
+    @PatchMapping("/{id}/set-priority")
+    public ResponseEntity<Appointment> setPriorityCondition(
+            @PathVariable("id") Long id,
+            @RequestBody PriorityCondition priorityCondition) {
+        try {
+            Appointment updatedAppointment = appointmentService.setPriorityCondition(id, priorityCondition);
+            return ResponseEntity.ok(updatedAppointment);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
     //Endpoint para buscar Appointment por intervalo de datas.
     @GetMapping("/between")
     public ResponseEntity<List<Appointment>> getAppointmentBetwenDate(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         
-        var Appointment = appointmentService.findByScheduledDateTime(startDate, endDate);
+        var appointment = appointmentService.findByScheduledDateTime(startDate, endDate);
 
-        if (Appointment.isEmpty()) {
+        if (appointment.isEmpty()) {
             throw new NoSuchElementException("Nenhum agendamento encontrado entre essas datas");
         }
-        return ResponseEntity.ok(Appointment);
+        return ResponseEntity.ok(appointment);
     }
 
 
